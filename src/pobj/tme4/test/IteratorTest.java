@@ -23,6 +23,7 @@ public class IteratorTest {
 			l.add(s);
 		}
 		Collections.sort(l);
+		System.out.println(l);
 		assertEquals(6, l.size());
 		assertEquals("a", l.get(0));
 		assertEquals("a", l.get(1));

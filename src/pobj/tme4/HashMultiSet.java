@@ -10,18 +10,16 @@ import java.util.Map;
 
 public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T> {
 
-	private Map<T, Integer> hashMap;
+	Map<T, Integer> hashMap;
 
 	public HashMultiSet() {
-		hashMap = new HashMap<>();
+		hashMap = new HashMap<T, Integer>();
 	}
 
-	public HashMultiSet(Collection<T> col) {
-		Iterator<T> i = col.iterator();
-		while (i.hasNext()) {
-			T suivant = i.next();
-			hashMap.put(suivant, hashMap.get(suivant) + 1);
-		}
+	public HashMultiSet(Collection<T> collection) {
+		this();
+		for (T e : collection)
+			add(e);
 	}
 
 	@Override
@@ -37,43 +35,32 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 
 	@Override
 	public boolean add(T e) {
-		if (!hashMap.containsKey(e)) {
-			hashMap.put(e, 1);
-			return true;
-		}
-		hashMap.put(e, hashMap.get(e) + 1);
-		return false;
+		return add(e, 1);
 	}
 
 	@Override
 	public boolean remove(Object e) {
-		if (hashMap.containsKey(e)) {
-			hashMap.remove(e);
-			return true;
-		}
-		return false;
-
+		return remove(e, 1);
 	}
 
 	@Override
 	public boolean remove(Object e, int count) {
 		if (hashMap.containsKey(e)) {
-			int cpt = hashMap.get(e);
-			hashMap.remove(e);
-			if (cpt > count) {
-				hashMap.put((T) e, cpt - count);
+			if (hashMap.get(e) > count) {
+				hashMap.put((T) e, hashMap.get(e) - count);
 				return false;
-			} else
-				return true;
+			}
+			hashMap.remove(e);
+			return true;
 		}
 		return false;
+
 	}
 
 	@Override
 	public int count(T o) {
-		if (hashMap.containsKey(o))
-			return hashMap.get(o);
-		return 0;
+
+		return hashMap.get(o);
 	}
 
 	@Override
@@ -84,63 +71,59 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 
 	@Override
 	public int size() {
-		int compte = 0;
-		for (T e : hashMap.keySet()) {
-			compte += hashMap.get(e);
-		}
-		return compte;
+		int cpt = 0;
+		for (T e : hashMap.keySet())
+			cpt += hashMap.get(e);
+		return cpt;
 	}
 
-	// sous classe iterator
-	public class HashMultiSetIterator implements Iterator<T> {
-
-		private Iterator<Map.Entry<T, Integer>> iterator;
-		private int suivant;
-		private T current;
+	class HashMultiSetIterator implements Iterator<T> {
+		Iterator<Map.Entry<T, Integer>> iterateur;
+		int count = 0;
+		T courent = null;
 
 		public HashMultiSetIterator() {
-			iterator = hashMap.entrySet().iterator();
-			suivant = 0;
+			iterateur = hashMap.entrySet().iterator();
 		}
 
 		@Override
 		public boolean hasNext() {
-			return iterator.hasNext();
+			if (count > 0) {
+				count--;
+				return true;
+			}
+			if (count <= 0)
+				if (iterateur.hasNext()) {
+					courent = iterateur.next().getKey();
+					count = count(courent) - 1;
+					return true;
+				}
+
+			return false;
 		}
 
 		@Override
 		public T next() {
-			if (suivant == 0) {
-			 current=iterator.next().getKey();
-			 suivant =hashMap.get(current)-1;	
-			
-			}
-			else
-				suivant --;
-		return current;
+			return courent;
 		}
 
 	}
 
 	@Override
 	public Iterator<T> iterator() {
+		// TODO Auto-generated method stub
 		return new HashMultiSetIterator();
 	}
 
 	@Override
 	public List<T> elements() {
-		List<T> elt = new ArrayList<T>();
-		elt.addAll(hashMap.keySet());
-		return elt;
+		List<T> unique=new ArrayList<T>();
+		unique.addAll(hashMap.keySet());
+		return unique;
 	}
 
 	@Override
-	public int compare(T arg0, T arg1) {
-		if (count(arg0) > count(arg1))
-			return 1;
-		else if (count(arg0) == count(arg1))
-			return 0;
-		return -1;
+	public int compare(T e, T f) {
+		return Integer.compare(count(f), count(e));
 	}
-
 }
