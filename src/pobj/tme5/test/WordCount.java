@@ -1,4 +1,4 @@
-package pobj.tme4;
+package pobj.tme5.test;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -33,27 +33,17 @@ public class WordCount {
 
 	public static void main(String[] args) {
 		MultiSet<String> hashMap = new HashMultiSet<String>();
-		MultiSet<String> naiveMultiSet = new NaiveMultiSet<String>();
 
 		wordcount(hashMap, "data/WarAndPeace.txt");
-		wordcount(naiveMultiSet, "data/WarAndPeace.txt");
 
 		List<String> element = hashMap.elements();
-		List<String> element2 = naiveMultiSet.elements();
 
-		System.out.println("HashMultiSet:");
+		
 		Chrono chrono = new Chrono();
 		Collections.sort(element, hashMap);
 		chrono.stop();
 
-		for (int i = 0; i < 10; i++)
-			System.out.println(element.get(i) + " : " + hashMap.count(element.get(i)));
+		System.out.println(hashMap.toString());
 
-		System.out.println("NaiveMultiSet :");
-		Chrono chrono2 = new Chrono();
-		Collections.sort(element2, naiveMultiSet);
-		chrono2.stop();
-		for (int i = 0; i < 20; i++)
-			System.out.println(element2.get(i) + " : " + hashMap.count(element2.get(i)));
 	}
 }
