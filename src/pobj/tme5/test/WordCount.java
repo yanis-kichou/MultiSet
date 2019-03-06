@@ -13,6 +13,7 @@ public class WordCount {
 	public static void wordcount(MultiSet<String> ms, String file) {
 
 		BufferedReader br;
+		MultiSetDecorator<String > m=new MultiSetDecorator<>(ms);
 		try {
 			br = new BufferedReader(new FileReader(file));
 			String line;
@@ -20,7 +21,7 @@ public class WordCount {
 				for (String word : line.split("\\P{L}+")) {
 					if (word.equals(""))
 						continue;
-					ms.add(word);
+					m.add(word);
 
 				}
 			}
@@ -43,7 +44,7 @@ public class WordCount {
 		Collections.sort(element, hashMap);
 		chrono.stop();
 
-		System.out.println(hashMap.toString());
+		
 
 	}
 }

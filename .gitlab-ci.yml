@@ -15,3 +15,6 @@ TME4 CollectionTest:
 
 TME5 HashMultiSetTest:
   script: ./scripts-ci/run.sh pobj.tme5.test.HashMultiSetTest
+
+TME5 HashMultiSetTest2:
+  script: ./scripts-ci/run.sh pobj.tme5.test.HashMultiSetTest2

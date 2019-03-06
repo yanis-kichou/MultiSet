@@ -11,9 +11,10 @@ import java.util.Map;
 public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T> {
 
 	Map<T, Integer> hashMap;
-
+	int size;
 	public HashMultiSet() {
 		hashMap = new HashMap<T, Integer>();
+		size=0;
 	}
 
 	public HashMultiSet(Collection<T> collection) {
@@ -26,13 +27,17 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 	public boolean add(T e, int count) {
 		if (count < 0)
 			throw new IllegalArgumentException(" erreru ajoute d'un valeur a occurence negatif ");
+		size+=count;
 		if (hashMap.containsKey(e)) {
 			hashMap.put(e, hashMap.get(e) + count);
+			assert isConsistent();
 			return false;
 		} else {
 			hashMap.put(e, count);
+			assert isConsistent();
 			return true;
 		}
+		
 	}
 
 	@Override
@@ -49,15 +54,22 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 	public boolean remove(Object e, int count) {
 		if (count < 0 || count>count((T)e))
 			throw new IllegalArgumentException("Suppresion d'un nombre negatif d'occurence d'un objet");
+		size-=count;
 		if (hashMap.containsKey(e)) {
 			if (hashMap.get(e) > count) {
 				hashMap.put((T) e, hashMap.get(e) - count);
+				assert isConsistent();
 				return false;
 			}
-			hashMap.remove(e);
-			return true;
+			if(hashMap.get(e)==count) {
+				hashMap.remove(e);
+				assert isConsistent();
+				return true;
+			}
 		}
+		assert isConsistent();
 		return false;
+		
 
 	}
 
@@ -71,6 +83,7 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 	@Override
 	public void clear() {
 		hashMap.clear();
+		size=0;
 
 	}
 
@@ -132,6 +145,16 @@ public class HashMultiSet<T> extends AbstractCollection<T> implements MultiSet<T
 		return Integer.compare(count(f), count(e));
 	}
 
+		public boolean isConsistent() {
+			int cpt=0;
+			for (T e: hashMap.keySet()) {
+				if(hashMap.get(e)<0)
+					return false;
+				cpt+=hashMap.get(e);
+			}
+			return size==cpt;
+			
+		}
 	@Override
 	public String toString() {
 		StringBuffer s = new StringBuffer();
